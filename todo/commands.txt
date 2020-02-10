@@ -1,0 +1,21 @@
+# Creating todo charts
+helm create todo
+cd todo
+helm install todo1 . --dry-run  --debug
+helm install todo1 .
+kubectl get pods
+
+# Setting chartmuseum as a local repo
+helm install chartmuseum stable/chartmuseum --set service.type=NodePort --set service.nodePort=32688 --set env.open.DISABLE_API=false
+helm plugin install https://github.com/chartmuseum/helm-push
+helm repo add chartmuseum http://$(minikube ip):32688
+helm repo update
+helm repo list
+
+# Packaging todo chart and add it to chartmuseum repo
+helm package todo
+helm push todo-0.1.0.tgz chartmuseum
+helm repo update
+helm install todo-prod chartmuseum/todo
+helm list
+
